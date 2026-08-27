@@ -1,0 +1,25 @@
+{
+  "name": "openscout",
+  "version": "0.1.0",
+  "private": true,
+  "description": "持续开源发现与贡献助手 — 基于 Agent 的 GitHub Issue 发现、代码贡献和 PR 管理工作流引擎",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint packages/",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf packages/*/dist"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "eslint": "^9.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}
