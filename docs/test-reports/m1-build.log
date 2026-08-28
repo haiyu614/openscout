@@ -1,0 +1,7 @@
+===== BUILD (tsc --build) =====
+
+> openscout@0.1.0 build /Users/doojiang/CodeBuddy/demo/openscout
+> tsc --build
+
+BUILD_EXIT=0
+

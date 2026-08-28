@@ -1,0 +1,34 @@
+=== test names captured ===
+✓ packages/core/tests/search.test.ts > SearchEngine - 仓库搜索排序 > 硬过滤后按评分降序，仅返回 limit 条 1ms
+✓ packages/core/tests/search.test.ts > SearchEngine - 仓库搜索排序 > 归档仓库被硬过滤排除（即使评分高） 0ms
+✓ packages/core/tests/search.test.ts > SearchEngine - Issue 搜索可行性排序 > 按可行性 high > medium > low 排序 0ms
+✓ packages/core/tests/search.test.ts > SearchEngine - Issue 搜索可行性排序 > 使用 limit 截断结果 0ms
+✓ packages/core/tests/ranker.test.ts > CandidateRanker - 仓库评分 > 硬过滤排除归档仓库 1ms
+✓ packages/core/tests/ranker.test.ts > CandidateRanker - 仓库评分 > 硬过滤排除无描述且低星的仓库 0ms
+✓ packages/core/tests/ranker.test.ts > CandidateRanker - 仓库评分 > 有描述且低星的仓库通过硬过滤 0ms
+✓ packages/core/tests/ranker.test.ts > CandidateRanker - 仓库评分 > 近期更新的仓库获得活跃度满分 0ms
+✓ packages/core/tests/ranker.test.ts > CandidateRanker - 仓库评分 > 长期未更新的仓库计入 concerns 0ms
+✓ packages/core/tests/ranker.test.ts > CandidateRanker - 仓库评分 > 千星仓库获得社区规模加分 0ms
+✓ packages/core/tests/ranker.test.ts > CandidateRanker - 仓库评分 > 有许可证与 topics 累加分数上限封顶 100 0ms
+✓ packages/core/tests/ranker.test.ts > CandidateRanker / Preflight - Issue 可行性 > good first issue 且无人认领 → high 0ms
+✓ packages/core/tests/ranker.test.ts > CandidateRanker / Preflight - Issue 可行性 > 已被认领 → low（阻塞） 0ms
+✓ packages/core/tests/ranker.test.ts > CandidateRanker / Preflight - Issue 可行性 > 创建超过一年 → 可能过时（阻塞） 0ms
+✓ packages/core/tests/ranker.test.ts > CandidateRanker / Preflight - Issue 可行性 > 讨论过热（评论过多）→ low 0ms
+✓ packages/core/tests/ranker.test.ts > CandidateRanker / Preflight - Issue 可行性 > 无人讨论 → 无竞争（正向理由） 0ms
+✓ packages/core/tests/ranker.test.ts > CandidateRanker / Preflight - Issue 可行性 > rankIssue 委托 preflight 并产出 RankedIssue 0ms
+✓ packages/core/tests/ranker.test.ts > CandidateRanker / Preflight - Issue 可行性 > feasibilityOrder 排序权重正确 0ms
+✓ packages/core/tests/ranker.test.ts > CandidateRanker / Preflight - Issue 可行性 > 默认配置常量存在 0ms
+✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 1/2/6 本地注册表 > 规则 1：Issue 主键已存在活跃记录 → 重复 1ms
+✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 1/2/6 本地注册表 > 规则 2：同任务命中已存在活跃记录 → 幂等重复 0ms
+✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 1/2/6 本地注册表 > 规则 5：意图指纹命中活跃记录 → 重复 0ms
+✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 1/2/6 本地注册表 > 规则 6：墓碑记录默认不重复生成 0ms
+✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 1/2/6 本地注册表 > 规则 6：显式 restore 后允许重新生成 0ms
+✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 3 运行幂等 > 同 runId + 同 key 复用记录而非新建 0ms
+✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 4/8 远端事实 > 规则 4：Issue 已有关联 PR → 重复 0ms
+✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 4/8 远端事实 > 规则 4：用户已有 fork 分支 → 重复 0ms
+✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 4/8 远端事实 > 规则 4：无任何远端事实 → 不重复 0ms
+✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 4/8 远端事实 > checkAll 先本地后远端 0ms
+✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 4/8 远端事实 > checkAll 本地无重复且无远端 facts 时返回不重复 0ms
+✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 4/8 远端事实 > checkRemote 接收 repoMeta 不影响判定 0ms
+✓ packages/core/tests/dedup.test.ts > DedupEngine - 查询辅助 > findActiveByIssueKey 找到活跃工作项 0ms
+✓ packages/core/tests/dedup.test.ts > DedupEngine - 查询辅助 > register 写入带时间戳的记录 0ms

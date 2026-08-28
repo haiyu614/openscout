@@ -12,7 +12,7 @@
  */
 
 import type { StoragePort, TablePort } from '../ports/storage.js'
-import type { GitHubPort, IssueInfo, RepositoryInfo } from '../ports/github.js'
+import type { IssueInfo, RepositoryInfo } from '../ports/github.js'
 import type { ClockPort } from '../ports/clock.js'
 import { systemClock } from '../ports/clock.js'
 import {
@@ -46,18 +46,15 @@ export interface RegisterInput {
 
 export interface DedupEngineDeps {
   storage: StoragePort
-  github?: GitHubPort
   clock?: ClockPort
 }
 
 export class DedupEngine {
   private readonly table: TablePort<string, unknown>
-  private readonly github?: GitHubPort
   private readonly clock: ClockPort
 
   constructor(deps: DedupEngineDeps) {
     this.table = deps.storage.dedup
-    this.github = deps.github
     this.clock = deps.clock ?? systemClock
   }
 

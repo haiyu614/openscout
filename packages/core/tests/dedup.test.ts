@@ -80,7 +80,7 @@ describe('DedupEngine - 规则 3 运行幂等', () => {
 describe('DedupEngine - 规则 4/8 远端事实', () => {
   it('规则 4：Issue 已有关联 PR → 重复', () => {
     const storage = new InMemoryStorage()
-    const engine = new DedupEngine({ storage, github: makeMockGithub() })
+    const engine = new DedupEngine({ storage })
     const issue = makeIssue()
     const decision = engine.checkRemote(issue, { relatedPRs: [{ number: 1, state: 'open' }] })
     expect(decision.duplicate).toBe(true)
@@ -89,7 +89,7 @@ describe('DedupEngine - 规则 4/8 远端事实', () => {
 
   it('规则 4：用户已有 fork 分支 → 重复', () => {
     const storage = new InMemoryStorage()
-    const engine = new DedupEngine({ storage, github: makeMockGithub() })
+    const engine = new DedupEngine({ storage })
     const issue = makeIssue()
     const decision = engine.checkRemote(issue, { existingUserBranches: ['openscout/fix-1'] })
     expect(decision.duplicate).toBe(true)
@@ -97,7 +97,7 @@ describe('DedupEngine - 规则 4/8 远端事实', () => {
 
   it('规则 4：无任何远端事实 → 不重复', () => {
     const storage = new InMemoryStorage()
-    const engine = new DedupEngine({ storage, github: makeMockGithub() })
+    const engine = new DedupEngine({ storage })
     const issue = makeIssue()
     const decision = engine.checkRemote(issue, { relatedPRs: [], existingUserBranches: [] })
     expect(decision.duplicate).toBe(false)
@@ -105,7 +105,7 @@ describe('DedupEngine - 规则 4/8 远端事实', () => {
 
   it('checkAll 先本地后远端', async () => {
     const storage = new InMemoryStorage()
-    const engine = new DedupEngine({ storage, github: makeMockGithub() })
+    const engine = new DedupEngine({ storage })
     const key = issueDeduplicationKey(1, 500)
     await engine.register({ key, workItemId: 'wi-7', taskId: 'task-a' })
     const decision = await engine.checkAll(
@@ -118,7 +118,7 @@ describe('DedupEngine - 规则 4/8 远端事实', () => {
 
   it('checkAll 本地无重复且无远端 facts 时返回不重复', async () => {
     const storage = new InMemoryStorage()
-    const engine = new DedupEngine({ storage, github: makeMockGithub() })
+    const engine = new DedupEngine({ storage })
     const key = issueDeduplicationKey(1, 510)
     const decision = await engine.checkAll({ key, taskId: 'task-a' })
     expect(decision.duplicate).toBe(false)
@@ -126,7 +126,7 @@ describe('DedupEngine - 规则 4/8 远端事实', () => {
 
   it('checkRemote 接收 repoMeta 不影响判定', () => {
     const storage = new InMemoryStorage()
-    const engine = new DedupEngine({ storage, github: makeMockGithub() })
+    const engine = new DedupEngine({ storage })
     const issue = makeIssue()
     const decision = engine.checkRemote(issue, { relatedPRs: [] }, makeRepo({ githubId: 1 }))
     expect(decision.duplicate).toBe(false)

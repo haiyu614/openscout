@@ -1,0 +1,46 @@
+===== TEST + COVERAGE =====
+
+ RUN  v3.2.7 /Users/doojiang/CodeBuddy/demo/openscout
+      Coverage enabled with v8
+
+ ✓ packages/core/tests/search.test.ts (4 tests) 2ms
+ ✓ packages/core/tests/ranker.test.ts (15 tests) 3ms
+ ✓ packages/core/tests/dedup.test.ts (14 tests) 5ms
+
+ Test Files  3 passed (3)
+      Tests  33 passed (33)
+   Start at  14:07:21
+   Duration  369ms (transform 100ms, setup 0ms, collect 159ms, tests 10ms, environment 0ms, prepare 209ms)
+
+ % Coverage report from v8
+
+=============================== Coverage summary ===============================
+Statements   : 68.73% ( 332/483 )
+Branches     : 91.58% ( 98/107 )
+Functions    : 100% ( 31/31 )
+Lines        : 68.73% ( 332/483 )
+================================================================================
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   68.73 |    91.58 |     100 |   68.73 |                   
+ engines           |   98.07 |    90.81 |     100 |   98.07 |                   
+  dedup.ts         |   98.47 |    85.41 |     100 |   98.47 | 139-140           
+  preflight.ts     |   94.87 |    92.85 |     100 |   94.87 | 77-78             
+  ranker.ts        |   97.75 |    96.29 |     100 |   97.75 | 103-104           
+  search.ts        |     100 |      100 |     100 |     100 |                   
+ models            |   15.69 |      100 |     100 |   15.69 |                   
+  dedup.ts         |     100 |      100 |     100 |     100 |                   
+  index.ts         |       0 |      100 |     100 |       0 | 5-16              
+  pr-work-item.ts  |       0 |      100 |     100 |       0 | 4-68              
+  quota.ts         |       0 |      100 |     100 |       0 | 4-21              
+  review-bundle.ts |       0 |      100 |     100 |       0 | 4-33              
+  task-run.ts      |       0 |      100 |     100 |       0 | 4-35              
+  task.ts          |       0 |      100 |     100 |       0 | 4-64              
+-------------------|---------|----------|---------|---------|-------------------
+npm notice
+npm notice New major version of npm available! 10.9.3 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice
+TEST_EXIT=0

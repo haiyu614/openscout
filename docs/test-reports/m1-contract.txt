@@ -1,0 +1,33 @@
+===== FORBIDDEN IMPORT CHECK (core must be framework-free) =====
+--- searching packages/core for forbidden deps ---
+OK: no framework/host imports in core
+
+--- core runtime deps (must be only zod) ---
+{
+  "zod": "^3.24.0"
+}
+devDeps: {
+  "@openscout/storage-memory": "workspace:*"
+}
+
+--- forbidden framework tokens in core src ---
+FOUND TOKENS
+
+--- engine import graph (proves core only imports ports/models) ---
+packages/core/src/engines/dedup.ts:14:import type { StoragePort, TablePort } from '../ports/storage.js'
+packages/core/src/engines/dedup.ts:15:import type { GitHubPort, IssueInfo, RepositoryInfo } from '../ports/github.js'
+packages/core/src/engines/dedup.ts:16:import type { ClockPort } from '../ports/clock.js'
+packages/core/src/engines/dedup.ts:17:import { systemClock } from '../ports/clock.js'
+packages/core/src/engines/dedup.ts:18:import {
+packages/core/src/engines/preflight.ts:14:import type { IssueInfo } from '../ports/github.js'
+packages/core/src/engines/preflight.ts:15:import type { RankerConfig } from './ranker.js'
+packages/core/src/engines/preflight.ts:16:import { defaultRankerConfig } from './ranker.js'
+packages/core/src/engines/ranker.ts:10:import type { RepositoryInfo, IssueInfo } from '../ports/github.js'
+packages/core/src/engines/ranker.ts:11:import type { ClockPort } from '../ports/clock.js'
+packages/core/src/engines/ranker.ts:12:import { systemClock } from '../ports/clock.js'
+packages/core/src/engines/ranker.ts:13:import { assessIssueFeasibility } from './preflight.js'
+packages/core/src/engines/search.ts:8:import type { GitHubPort, RepositoryInfo, IssueInfo } from '../ports/github.js'
+packages/core/src/engines/search.ts:9:import type { ClockPort } from '../ports/clock.js'
+packages/core/src/engines/search.ts:10:import { systemClock } from '../ports/clock.js'
+packages/core/src/engines/search.ts:11:import { CandidateRanker, passesRepoHardFilters, feasibilityOrder } from './ranker.js'
+packages/core/src/engines/search.ts:12:import type { Feasibility } from './ranker.js'
