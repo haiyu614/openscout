@@ -1,0 +1,54 @@
+=== pnpm test:coverage ===
+
+> openscout@0.1.0 test:coverage /Users/doojiang/CodeBuddy/demo/openscout
+> vitest run --coverage
+
+
+ RUN  v3.2.7 /Users/doojiang/CodeBuddy/demo/openscout
+      Coverage enabled with v8
+
+ ✓ packages/adapter-dsh/tests/credential.test.ts (4 tests) 5ms
+ ✓ packages/core/tests/search.test.ts (4 tests) 6ms
+ ✓ packages/core/tests/ranker.test.ts (15 tests) 7ms
+ ✓ packages/core/tests/dedup.test.ts (14 tests) 11ms
+ ✓ packages/adapter-dsh/tests/storage.test.ts (6 tests) 12ms
+ ✓ packages/adapter-dsh/tests/tools.test.ts (3 tests) 8ms
+
+ Test Files  6 passed (6)
+      Tests  46 passed (46)
+   Start at  15:20:58
+   Duration  2.16s (transform 775ms, setup 0ms, collect 1.07s, tests 49ms, environment 31ms, prepare 5.55s)
+
+ % Coverage report from v8
+
+=============================== Coverage summary ===============================
+Statements   : 97.39% ( 635/652 )
+Branches     : 90.47% ( 114/126 )
+Functions    : 89.58% ( 43/48 )
+Lines        : 97.39% ( 635/652 )
+================================================================================
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   97.39 |    90.47 |   89.58 |   97.39 |                   
+ adapter-dsh/src   |   94.73 |    86.95 |   80.95 |   94.73 |                   
+  credential.ts    |     100 |      100 |     100 |     100 |                   
+  spec.ts          |     100 |      100 |     100 |     100 |                   
+  storage.ts       |   89.79 |      100 |   84.61 |   89.79 | 70-72,76-77       
+  tools.ts         |    95.5 |     62.5 |      60 |    95.5 | 34-35,81-82       
+ ...-dsh/src/types |       0 |        0 |       0 |       0 |                   
+  dsh-shims.d.ts   |       0 |        0 |       0 |       0 |                   
+ core/src/engines  |   98.05 |     90.9 |     100 |   98.05 |                   
+  dedup.ts         |   98.44 |    85.41 |     100 |   98.44 | 136-137           
+  preflight.ts     |   94.87 |    92.85 |     100 |   94.87 | 77-78             
+  ranker.ts        |   97.75 |    96.42 |     100 |   97.75 | 103-104           
+  search.ts        |     100 |      100 |     100 |     100 |                   
+ core/src/models   |   98.83 |      100 |      75 |   98.83 |                   
+  dedup.ts         |     100 |      100 |     100 |     100 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+  pr-work-item.ts  |     100 |      100 |     100 |     100 |                   
+  quota.ts         |      80 |      100 |       0 |      80 | 20-21             
+  review-bundle.ts |     100 |      100 |     100 |     100 |                   
+  task-run.ts      |     100 |      100 |     100 |     100 |                   
+  task.ts          |     100 |      100 |     100 |     100 |                   
+-------------------|---------|----------|---------|---------|-------------------

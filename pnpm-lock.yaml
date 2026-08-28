@@ -1,13 +1,19 @@
 lockfileVersion: '9.0'
 
 settings:
-  autoInstallPeers: true
+  autoInstallPeers: false
   excludeLinksFromLockfile: false
 
 importers:
 
   .:
     devDependencies:
+      '@openscout/core':
+        specifier: workspace:*
+        version: link:packages/core
+      '@openscout/github-adapter':
+        specifier: workspace:*
+        version: link:packages/github-adapter
       '@types/node':
         specifier: ^22.0.0
         version: 22.20.1
@@ -23,6 +29,18 @@ importers:
       vitest:
         specifier: ^3.0.0
         version: 3.2.7(@types/node@22.20.1)
+
+  packages/adapter-dsh:
+    dependencies:
+      '@openscout/core':
+        specifier: workspace:*
+        version: link:../core
+      '@openscout/github-adapter':
+        specifier: workspace:*
+        version: link:../github-adapter
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
 
   packages/core:
     dependencies:

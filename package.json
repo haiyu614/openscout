@@ -7,12 +7,15 @@
   "scripts": {
     "build": "tsc --build",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "lint": "eslint packages/",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf packages/*/dist"
   },
   "devDependencies": {
+    "@openscout/core": "workspace:*",
+    "@openscout/github-adapter": "workspace:*",
     "@types/node": "^22.0.0",
     "@vitest/coverage-v8": "3.2.7",
     "eslint": "^9.0.0",

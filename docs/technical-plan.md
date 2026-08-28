@@ -652,11 +652,19 @@ Week 19-20 │ M7: 打磨 + 演示           │ MVP 就绪
 |--------|------|----------|------|
 | **M0** | ✅ 已完成并推送 | monorepo(pnpm)+tsconfig+vitest；9 个 Port 接口；数据模型(zod)；`InMemoryStorage`；`OctokitGitHubAdapter`；`ClockPort` | `tsc --build` 通过；`github-adapter` 类型修复 |
 | **M1** | ✅ 已完成并推送 | `CandidateRanker`（仓库+Issue 可解释评分，可独立单测）；`ContributionPreflight`（Issue 可行性，可注入时钟）；`DedupEngine`（§6.2 八条去重规则的 1/2/3/4/5/6/8 与墓碑）；`SearchEngine` 重构为委托 Ranker；33 个单测（Mock Port） | `tsc --build` 通过；`vitest` 33/33 通过；engines 覆盖率 94–100% |
+| **M2** | ✅ 已实现待推送 | `packages/adapter-dsh`：OpenScout DSH 域声明（5 表）；`DshStorage implements StoragePort`（Domain→Core 五表）；`DshCredentialPort implements CredentialPort`（经 `ctx.credentials.resolve`）；复用 `OctokitGitHubAdapter`；模型可见工具 `search_repos`/`search_issues`；Cordis 插件入口（开域/构造引擎/注册工具/可逆转清理） | `tsc --build` 通过；`vitest` 46/46 通过；仓库覆盖率 97.39%；运行态动态插件验证 `storageDomain.open`/`credentials.resolve`/`harness.defineTool`+`ctx.tools.register` 真实契约（见 `docs/m2-evaluation.md`） |
 
 **复用性验证（M1 末）**
 - [x] `packages/core` 在没有 `adapter-dsh` 的情况下独立构建和测试通过
 - [x] Core 单元测试全部使用 Mock Port（`InMemoryStorage` + `makeMockGithub`）
 - [x] `package.json` 运行时依赖仅 `zod`
 - [x] 更换 `StoragePort` 实现（内存）后所有 Core 测试通过
+
+ **复用性验证（M2 末）**
+ - [x] `packages/adapter-dsh` 是唯一感知 DSH 的层；Core 零 DSH/Cordis 导入（grep 确认）
+ - [x] adapter-dsh 仅依赖 Core 接口（`StoragePort`/`CredentialPort`/`GitHubPort`）+ DSH 宿主服务
+ - [x] adapter-dsh 在 monorepo 内独立 `tsc --build`/vitest（DSH 类型以 ambient shim 垫片提供，运行时由宿主替代）
+ - [x] 运行态动态插件实测 `storageDomain.open`/`credentials.resolve`/`harness.defineTool`+`ctx.tools.register` 真实契约
+ - [ ] 真机实时 GitHub 搜索：受 `.credentials.yaml` fine-grained token 已 401 失效 + 沙箱网络拦截阻断（非代码缺陷）；待有效 token 后补 `scripts/live-search-loop.mjs`
 
 > 注：M1 排期原计划 3 周，因 M0 已包含 `SearchEngine` 雏形，实际聚焦于把评分/去重抽离为可独立测试的纯逻辑 + 补齐八条去重规则 + 单测，已在一次实现内完成。M2 起进入 DSH Adapter 搜索闭环。

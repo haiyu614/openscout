@@ -1,6 +1,9 @@
 node_modules/
 dist/
-*.tsbuildinfo
-.env
-.env.*
 coverage/
+oscp-*.json
+*.log
+
+tsconfig.tsbuildinfo
+packages/*/tsconfig.tsbuildinfo
+*.tsbuildinfo

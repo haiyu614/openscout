@@ -12,20 +12,13 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "composite": true
+    "composite": true,
+    "outDir": "./dist",
+    "rootDir": "./src"
   },
-  "include": ["packages/*/src/**/*.ts"],
-  "exclude": [
-    "node_modules",
-    "**/dist/**",
-    "**/tests/**",
-    "**/*.test.ts",
-    "vitest.config.ts"
-  ],
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"],
   "references": [
-    { "path": "packages/core" },
-    { "path": "packages/github-adapter" },
-    { "path": "packages/storage-memory" },
-    { "path": "packages/adapter-dsh" }
+    { "path": "../core" }
   ]
 }
