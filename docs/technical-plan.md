@@ -652,7 +652,8 @@ Week 19-20 │ M7: 打磨 + 演示           │ MVP 就绪
 |--------|------|----------|------|
 | **M0** | ✅ 已完成并推送 | monorepo(pnpm)+tsconfig+vitest；9 个 Port 接口；数据模型(zod)；`InMemoryStorage`；`OctokitGitHubAdapter`；`ClockPort` | `tsc --build` 通过；`github-adapter` 类型修复 |
 | **M1** | ✅ 已完成并推送 | `CandidateRanker`（仓库+Issue 可解释评分，可独立单测）；`ContributionPreflight`（Issue 可行性，可注入时钟）；`DedupEngine`（§6.2 八条去重规则的 1/2/3/4/5/6/8 与墓碑）；`SearchEngine` 重构为委托 Ranker；33 个单测（Mock Port） | `tsc --build` 通过；`vitest` 33/33 通过；engines 覆盖率 94–100% |
-| **M2** | ✅ 已实现待推送 | `packages/adapter-dsh`：OpenScout DSH 域声明（5 表）；`DshStorage implements StoragePort`（Domain→Core 五表）；`DshCredentialPort implements CredentialPort`（经 `ctx.credentials.resolve`）；复用 `OctokitGitHubAdapter`；模型可见工具 `search_repos`/`search_issues`；Cordis 插件入口（开域/构造引擎/注册工具/可逆转清理） | `tsc --build` 通过；`vitest` 46/46 通过；仓库覆盖率 97.39%；运行态动态插件验证 `storageDomain.open`/`credentials.resolve`/`harness.defineTool`+`ctx.tools.register` 真实契约（见 `docs/m2-evaluation.md`） |
+| **M2** | ✅ 已推送 | `packages/adapter-dsh`：OpenScout DSH 域声明（5 表）；`DshStorage implements StoragePort`（Domain→Core 五表）；`DshCredentialPort implements CredentialPort`（经 `ctx.credentials.resolve`）；复用 `OctokitGitHubAdapter`；模型可见工具 `search_repos`/`search_issues`；Cordis 插件入口（开域/构造引擎/注册工具/可逆转清理） | `tsc --build` 通过；`vitest` 46/46 通过；仓库覆盖率 97.39%；运行态动态插件验证 `storageDomain.open`/`credentials.resolve`/`harness.defineTool`+`ctx.tools.register` 真实契约（见 `docs/m2-evaluation.md`） |
+| **M3** | ✅ 已推送 | Core 纯逻辑三件套：`ReviewBundleBuilder`（diff+摘要+PR文案）、`PRWorkflowEngine`（10 状态机，fail-closed）、`ContribOrchestrator`（去重→Agent→ReviewBundle→状态流转，到 review 为止）；复用 `DedupEngine`/`StoragePort`/`AgentPort` | `tsc --build` 通过；`vitest` 78/78 通过；仓库覆盖率 97.79%；`core/src/engines/contrib` 98.82%；Core 零 DSH 依赖（见 `docs/m3-evaluation.md`） |
 
 **复用性验证（M1 末）**
 - [x] `packages/core` 在没有 `adapter-dsh` 的情况下独立构建和测试通过
@@ -666,5 +667,12 @@ Week 19-20 │ M7: 打磨 + 演示           │ MVP 就绪
  - [x] adapter-dsh 在 monorepo 内独立 `tsc --build`/vitest（DSH 类型以 ambient shim 垫片提供，运行时由宿主替代）
  - [x] 运行态动态插件实测 `storageDomain.open`/`credentials.resolve`/`harness.defineTool`+`ctx.tools.register` 真实契约
  - [ ] 真机实时 GitHub 搜索：受 `.credentials.yaml` fine-grained token 已 401 失效 + 沙箱网络拦截阻断（非代码缺陷）；待有效 token 后补 `scripts/live-search-loop.mjs`
+
+ **复用性验证（M3 末）**
+ - [x] `packages/core` 零 DSH/Cordis 导入（grep 确认）；M3 代码全在 Core，复用已有 Port/模型
+ - [x] `ContribOrchestrator` 仅依赖注入的 `StoragePort`/`DedupEngine`/`AgentPort`/`ClockPort`
+ - [x] M3 三引擎均用 Mock Port 单测（32 个），含状态机 fail-closed 非法流转拒绝
+ - [x] 全量测试 78/78 通过，仓库覆盖率 97.79%；M1/M2 单测无回归
+ - [ ] 真机闭环（去重→Agent→ReviewBundle→发布）：待静态插件挂载能力 + `adapter-agent`/`adapter-fs`/`adapter-shell` 落地后真机跑通（与 M2 真机验证同源，环境令牌限制，非代码问题）
 
 > 注：M1 排期原计划 3 周，因 M0 已包含 `SearchEngine` 雏形，实际聚焦于把评分/去重抽离为可独立测试的纯逻辑 + 补齐八条去重规则 + 单测，已在一次实现内完成。M2 起进入 DSH Adapter 搜索闭环。
