@@ -1,0 +1,102 @@
+=== vitest run (names) ===
+ ✓ packages/adapter-dsh/tests/credential.test.ts > DshCredentialPort > resolves the GitHub token via the injected resolver 5ms
+ ✓ packages/adapter-dsh/tests/credential.test.ts > DshCredentialPort > returns undefined when no credential is configured 1ms
+ ✓ packages/adapter-dsh/tests/credential.test.ts > DshCredentialPort > reflects token rotation on the next call 1ms
+ ✓ packages/adapter-dsh/tests/credential.test.ts > DshCredentialPort > honors a custom ref name 1ms
+ ✓ packages/core/tests/ranker.test.ts > CandidateRanker - 仓库评分 > 硬过滤排除归档仓库 2ms
+ ✓ packages/core/tests/ranker.test.ts > CandidateRanker - 仓库评分 > 硬过滤排除无描述且低星的仓库 1ms
+ ✓ packages/core/tests/ranker.test.ts > CandidateRanker - 仓库评分 > 有描述且低星的仓库通过硬过滤 0ms
+ ✓ packages/core/tests/ranker.test.ts > CandidateRanker - 仓库评分 > 近期更新的仓库获得活跃度满分 1ms
+ ✓ packages/core/tests/ranker.test.ts > CandidateRanker - 仓库评分 > 长期未更新的仓库计入 concerns 0ms
+ ✓ packages/core/tests/ranker.test.ts > CandidateRanker - 仓库评分 > 千星仓库获得社区规模加分 0ms
+ ✓ packages/core/tests/ranker.test.ts > CandidateRanker - 仓库评分 > 有许可证与 topics 累加分数上限封顶 100 0ms
+ ✓ packages/core/tests/ranker.test.ts > CandidateRanker / Preflight - Issue 可行性 > good first issue 且无人认领 → high 1ms
+ ✓ packages/core/tests/ranker.test.ts > CandidateRanker / Preflight - Issue 可行性 > 已被认领 → low（阻塞） 1ms
+ ✓ packages/core/tests/ranker.test.ts > CandidateRanker / Preflight - Issue 可行性 > 创建超过一年 → 可能过时（阻塞） 1ms
+ ✓ packages/core/tests/ranker.test.ts > CandidateRanker / Preflight - Issue 可行性 > 讨论过热（评论过多）→ low 0ms
+ ✓ packages/core/tests/ranker.test.ts > CandidateRanker / Preflight - Issue 可行性 > 无人讨论 → 无竞争（正向理由） 0ms
+ ✓ packages/core/tests/ranker.test.ts > CandidateRanker / Preflight - Issue 可行性 > rankIssue 委托 preflight 并产出 RankedIssue 0ms
+ ✓ packages/core/tests/ranker.test.ts > CandidateRanker / Preflight - Issue 可行性 > feasibilityOrder 排序权重正确 0ms
+ ✓ packages/core/tests/ranker.test.ts > CandidateRanker / Preflight - Issue 可行性 > 默认配置常量存在 0ms
+ ✓ packages/core/tests/publish-engine.test.ts > PublishEngine.publish > 未处于 approved → 拒绝且不调用任何 GitHub 写操作 9ms
+ ✓ packages/core/tests/publish-engine.test.ts > PublishEngine.publish > 缺 ReviewBundle → 拒绝 2ms
+ ✓ packages/core/tests/publish-engine.test.ts > PublishEngine.publish > 审批版本漂移 → 拒绝（fail-closed） 1ms
+ ✓ packages/core/tests/publish-engine.test.ts > PublishEngine.publish > 完整发布成功：fork→branch→push→PR 全部调用，状态 published 14ms
+ ✓ packages/core/tests/publish-engine.test.ts > PublishEngine.publish > GitHub fork 抛错 → 状态回写为 failed（fail-closed 半发布留痕） 1ms
+ ✓ packages/core/tests/publish-engine.test.ts > PublishEngine.publish > createPullRequest 抛错 → 状态回写 failed，不静默 1ms
+ ✓ packages/core/tests/orchestrator.test.ts > ContribOrchestrator.generate > 去重命中时返回 duplicate，不创建工作项 9ms
+ ✓ packages/core/tests/orchestrator.test.ts > ContribOrchestrator.generate > 完整生成：candidate -> generating -> review，并产出 ReviewBundle 14ms
+ ✓ packages/core/tests/orchestrator.test.ts > ContribOrchestrator.generate > Agent 失败时工作项进入 failed 状态 1ms
+ ✓ packages/core/tests/orchestrator.test.ts > ContribOrchestrator.generate > 委托 Agent 时传入工作目录与意图指令 23ms
+ ✓ packages/core/tests/orchestrator.test.ts > ContribOrchestrator.generate > 手动贡献（无 Issue）经意图指纹去重 1ms
+ ✓ packages/core/tests/orchestrator.test.ts > ContribOrchestrator.reset > failed 状态可 reset 回 candidate 1ms
+ ✓ packages/core/tests/orchestrator.test.ts > ContribOrchestrator.reset > review 状态不可 reset 1ms
+ ✓ packages/adapter-dsh/tests/publishing.test.ts > DshApprovalPort > 无审批设施 → fail-closed 返回 unavailable 8ms
+ ✓ packages/adapter-dsh/tests/publishing.test.ts > DshApprovalPort > 有设施 → 委托并透传结果 3ms
+ ✓ packages/adapter-dsh/tests/publishing.test.ts > registerPublishingTools > 注册 openscout_approve / openscout_publish 两个工具 6ms
+ ✓ packages/adapter-dsh/tests/publishing.test.ts > registerPublishingTools > openscout_approve 工具委托 orchestrator.approve 2ms
+ ✓ packages/adapter-dsh/tests/publishing.test.ts > registerPublishingTools > openscout_publish 工具委托 publishEngine.publish 并构造 commits 2ms
+ ✓ packages/adapter-dsh/tests/publishing.test.ts > registerPublishingTools > 缺 files 时发布仍委托（commits 为空数组） 1ms
+ ✓ packages/adapter-dsh/tests/tools.test.ts > search tools > registers exactly two tools 8ms
+ ✓ packages/adapter-dsh/tests/tools.test.ts > search tools > search_repos projects explainable candidates 10ms
+ ✓ packages/adapter-dsh/tests/tools.test.ts > search tools > search_issues projects feasibility/reasons/blockers 25ms
+ ✓ packages/adapter-dsh/tests/storage.test.ts > DshStorage adapter > exposes the five Core tables backed by DSH KvTables 13ms
+ ✓ packages/adapter-dsh/tests/storage.test.ts > DshStorage adapter > round-trips a value through put/get 10ms
+ ✓ packages/adapter-dsh/tests/storage.test.ts > DshStorage adapter > delegates update atomically 22ms
+ ✓ packages/adapter-dsh/tests/storage.test.ts > DshStorage adapter > iterates entries and keys 24ms
+ ✓ packages/adapter-dsh/tests/storage.test.ts > DshStorage adapter > delete returns presence 5ms
+ ✓ packages/adapter-dsh/tests/storage.test.ts > DshStorage adapter > maps each Core table to a distinct DSH table name 40ms
+ ✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 1/2/6 本地注册表 > 规则 1：Issue 主键已存在活跃记录 → 重复 4ms
+ ✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 1/2/6 本地注册表 > 规则 2：同任务命中已存在活跃记录 → 幂等重复 1ms
+ ✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 1/2/6 本地注册表 > 规则 5：意图指纹命中活跃记录 → 重复 1ms
+ ✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 1/2/6 本地注册表 > 规则 6：墓碑记录默认不重复生成 1ms
+ ✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 1/2/6 本地注册表 > 规则 6：显式 restore 后允许重新生成 0ms
+ ✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 3 运行幂等 > 同 runId + 同 key 复用记录而非新建 1ms
+ ✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 4/8 远端事实 > 规则 4：Issue 已有关联 PR → 重复 2ms
+ ✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 4/8 远端事实 > 规则 4：用户已有 fork 分支 → 重复 3ms
+ ✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 4/8 远端事实 > 规则 4：无任何远端事实 → 不重复 1ms
+ ✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 4/8 远端事实 > checkAll 先本地后远端 1ms
+ ✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 4/8 远端事实 > checkAll 本地无重复且无远端 facts 时返回不重复 0ms
+ ✓ packages/core/tests/dedup.test.ts > DedupEngine - 规则 4/8 远端事实 > checkRemote 接收 repoMeta 不影响判定 0ms
+ ✓ packages/core/tests/dedup.test.ts > DedupEngine - 查询辅助 > findActiveByIssueKey 找到活跃工作项 0ms
+ ✓ packages/core/tests/dedup.test.ts > DedupEngine - 查询辅助 > register 写入带时间戳的记录 0ms
+ ✓ packages/core/tests/pr-workflow-engine.test.ts > transition > candidate -> generate -> generating 3ms
+ ✓ packages/core/tests/pr-workflow-engine.test.ts > transition > generating -> submit-for-review -> review 1ms
+ ✓ packages/core/tests/pr-workflow-engine.test.ts > transition > review -> approve 必须绑定版本号 1ms
+ ✓ packages/core/tests/pr-workflow-engine.test.ts > transition > approved -> publish -> publishing 0ms
+ ✓ packages/core/tests/pr-workflow-engine.test.ts > transition > publishing -> publish-succeeded -> published 0ms
+ ✓ packages/core/tests/pr-workflow-engine.test.ts > transition > publishing -> publish-failed -> failed 0ms
+ ✓ packages/core/tests/pr-workflow-engine.test.ts > transition > published -> revise -> revising 0ms
+ ✓ packages/core/tests/pr-workflow-engine.test.ts > transition > revising -> publish -> publishing（发布后再改） 0ms
+ ✓ packages/core/tests/pr-workflow-engine.test.ts > transition > published -> close -> closed 7ms
+ ✓ packages/core/tests/pr-workflow-engine.test.ts > transition > failed/discarded/closed -> reset -> candidate 1ms
+ ✓ packages/core/tests/pr-workflow-engine.test.ts > transition > review -> discard -> discarded 0ms
+ ✓ packages/core/tests/pr-workflow-engine.test.ts > transition > review -> reject -> discarded 0ms
+ ✓ packages/core/tests/pr-workflow-engine.test.ts > transition > 非法流转被拒绝（candidate 不能直接 approved） 0ms
+ ✓ packages/core/tests/pr-workflow-engine.test.ts > transition > 非法流转被拒绝（published 不能 generating） 0ms
+ ✓ packages/core/tests/pr-workflow-engine.test.ts > transition > terminal 状态不可随意跳转（published 不能 reset） 0ms
+ ✓ packages/core/tests/pr-workflow-engine.test.ts > isTerminal / canReset > published/closed/discarded/failed 为终态 0ms
+ ✓ packages/core/tests/pr-workflow-engine.test.ts > isTerminal / canReset > 仅 failed/discarded/closed 可 reset 0ms
+ ✓ packages/core/tests/review-bundle-builder.test.ts > buildReviewBundle > 规范化 PR 标题并引用 Issue 编号 11ms
+ ✓ packages/core/tests/review-bundle-builder.test.ts > buildReviewBundle > PR 正文包含意图、Issue 链接与验证汇总 2ms
+ ✓ packages/core/tests/review-bundle-builder.test.ts > buildReviewBundle > 提交信息带 fix #issue 引用 1ms
+ ✓ packages/core/tests/review-bundle-builder.test.ts > buildReviewBundle > 所有验证通过时 risks 为空、skipped 为空 7ms
+ ✓ packages/core/tests/review-bundle-builder.test.ts > buildReviewBundle > 验证失败进入 risks 与 skippedValidations 1ms
+ ✓ packages/core/tests/review-bundle-builder.test.ts > buildReviewBundle > 改动文件过多时标注风险 0ms
+ ✓ packages/core/tests/review-bundle-builder.test.ts > buildReviewBundle > 手动贡献（无 Issue）时 PR 文案不带编号 0ms
+ ✓ packages/core/tests/review-bundle-builder.test.ts > buildReviewBundle > 输出通过 ReviewBundle schema 校验 7ms
+ ✓ packages/core/tests/orchestrator-approve.test.ts > ContribOrchestrator.approve > review 状态经批准后进入 approved，绑定 approvedVersion 30ms
+ ✓ packages/core/tests/orchestrator-approve.test.ts > ContribOrchestrator.approve > 审批不可用 → 拒绝且不推进 2ms
+ ✓ packages/core/tests/orchestrator-approve.test.ts > ContribOrchestrator.approve > 未配置 ApprovalPort → 拒绝 5ms
+ ✓ packages/core/tests/orchestrator-approve.test.ts > ContribOrchestrator.approve > 非 review 状态不可 approve 0ms
+ ✓ packages/core/tests/search.test.ts > SearchEngine - 仓库搜索排序 > 硬过滤后按评分降序，仅返回 limit 条 5ms
+ ✓ packages/core/tests/search.test.ts > SearchEngine - 仓库搜索排序 > 归档仓库被硬过滤排除（即使评分高） 1ms
+ ✓ packages/core/tests/search.test.ts > SearchEngine - Issue 搜索可行性排序 > 按可行性 high > medium > low 排序 2ms
+ ✓ packages/core/tests/search.test.ts > SearchEngine - Issue 搜索可行性排序 > 使用 limit 截断结果 1ms
+ ✓ packages/core/tests/approval-gate.test.ts > requestApproval > 审批不可用（unavailable）→ fail-closed 拒绝 2ms
+ ✓ packages/core/tests/approval-gate.test.ts > requestApproval > 用户拒绝 → 拒绝（未带 approvedVersion 强制委托宿主） 1ms
+ ✓ packages/core/tests/approval-gate.test.ts > requestApproval > 已批准且版本一致 → 直接放行（不委托宿主） 0ms
+ ✓ packages/core/tests/approval-gate.test.ts > requestApproval > 版本漂移（approvedVersion ≠ version）→ 委托宿主重新审批 0ms
+ ✓ packages/core/tests/approval-gate.test.ts > isApprovalValid > 版本一致有效、缺省无效、漂移无效 1ms
+ Test Files  13 passed (13)
+      Tests  99 passed (99)

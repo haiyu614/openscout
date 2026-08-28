@@ -36,3 +36,9 @@ export type {
   ContribOrchestratorDeps,
   DedupVerdict,
 } from './engines/contrib/orchestrator.js'
+
+// M4: 审批与发布
+export { requestApproval, isApprovalValid } from './engines/contrib/approval-gate.js'
+export type { ApprovalGateRequest, GateResult } from './engines/contrib/approval-gate.js'
+export { PublishEngine } from './engines/contrib/publish-engine.js'
+export type { PublishRequest, PublishResult, PublishEngineDeps } from './engines/contrib/publish-engine.js'

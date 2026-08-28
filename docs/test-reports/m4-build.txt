@@ -1,0 +1,6 @@
+=== pnpm build ===
+
+> openscout@0.1.0 build /Users/doojiang/CodeBuddy/demo/openscout
+> tsc --build
+
+EXIT=0

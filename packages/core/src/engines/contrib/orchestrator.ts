@@ -28,6 +28,8 @@ import { issueDeduplicationKey } from '../../models/dedup.js'
 import { buildReviewBundle, type BuildContext } from './review-bundle-builder.js'
 import { transition, canReset, type TransitionResult } from './pr-workflow-engine.js'
 import type { ReviewBundle } from '../../models/review-bundle.js'
+import type { ApprovalPort } from '../../ports/approval.js'
+import { requestApproval } from './approval-gate.js'
 
 /** 一次贡献生成的输入。 */
 export interface ContribRequest {
@@ -73,6 +75,8 @@ export interface ContribOrchestratorDeps {
   dedup: DedupEngine
   agent: AgentPort
   clock?: ClockPort
+  /** 审批闸门（review → approved 必经审批；不传则无法 approve） */
+  approval?: ApprovalPort
   /** 生成一个唯一工作项 ID（缺省用时间戳+随机） */
   idGenerator?: () => string
 }
@@ -217,7 +221,57 @@ export class ContribOrchestrator {
     }
     const bundle = buildReviewBundle(ctx, agentResult)
 
-    return { kind: 'generated', workItem: current, bundle, version: current.currentVersion }
+    // 持久化审阅包，供后续审批/发布读取（PublishEngine 不依赖 Agent 重放）
+    const saved = PRWorkItemRecord.parse({
+      ...current,
+      reviewBundle: bundle,
+      updatedAt: now,
+    })
+    this.table.put(id, saved as unknown)
+
+    return { kind: 'generated', workItem: saved, bundle, version: current.currentVersion }
+  }
+
+  /**
+   * 请求审批并（若通过）把工作项从 review → approved。
+   * 审批经 ApprovalGate 做版本绑定（fail-closed：不可用/拒绝 → 不推进）。
+   * 调用方需先经 `generate` 得到 review 状态的工作项与 bundle。
+   */
+  async approve(id: string): Promise<TransitionResult> {
+    if (!this.deps.approval) {
+      return { ok: false, reason: '未配置 ApprovalPort，无法审批' }
+    }
+    const cur = this.table.get(id) as PRWorkItemRecord | undefined
+    if (!cur) return { ok: false, reason: '工作项不存在' }
+    if (cur.status !== 'review') {
+      return { ok: false, reason: `工作项未处于 review 状态（实际 ${cur.status}）` }
+    }
+    const bundleVersion = cur.reviewBundle?.version ?? cur.currentVersion
+    const gate = await requestApproval(this.deps.approval, {
+      action: 'publish-pr',
+      workItemId: id,
+      currentStatus: cur.status,
+      version: bundleVersion,
+      approvedVersion: cur.approvedVersion,
+      details: {
+        repository: `${cur.repository.owner}/${cur.repository.name}`,
+        issue: cur.issue?.url,
+        prTitle: cur.reviewBundle?.prTitle,
+      },
+    })
+    if (!gate.ok) return { ok: false, reason: gate.reason }
+    // 批准通过：经状态机校验 review -> approved（含版本绑定）
+    const t = transition({ from: 'review', action: 'approve', version: bundleVersion })
+    if (!t.ok) return { ok: false, reason: t.reason }
+    const now = this.clock.now().toISOString()
+    const approved = PRWorkItemRecord.parse({
+      ...cur,
+      status: t.to,
+      approvedVersion: t.approvedVersion,
+      updatedAt: now,
+    })
+    this.table.put(id, approved as unknown)
+    return { ok: true, to: t.to, approvedVersion: t.approvedVersion }
   }
 
   /** 从终态/失败态重置为 candidate（重新生成）。 */

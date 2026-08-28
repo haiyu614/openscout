@@ -2,6 +2,7 @@
  * PRWorkItem 数据模型 — 从 Issue 到远端 PR 的完整生命周期
  */
 import { z } from 'zod'
+import { ReviewBundle } from './review-bundle.js'
 
 export const PRWorkItemStatus = z.enum([
   'candidate',    // 候选，待生成
@@ -61,6 +62,8 @@ export const PRWorkItemRecord = z.object({
   contributionIntent: z.string(),
   /** 改动指纹（用于意图去重） */
   changeFingerprint: z.string().optional(),
+  /** 最近一次生成的审阅包（待审阅/已批准/已发布时存在） */
+  reviewBundle: ReviewBundle.optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
   /** 丢弃原因 */

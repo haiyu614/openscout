@@ -3,9 +3,11 @@
  *
  * 职责（仅适配器层，不含任何核心业务逻辑）：
  *  1. 声明并打开 OpenScout 持久化域（DSH Domain）；
- *  2. 用 DSH 能力构造 Core 的 Port 实现（Storage / Credential）；
+ *  2. 用 DSH 能力构造 Core 的 Port 实现（Storage / Credential / Approval）；
  *  3. 用 @openscout/github-adapter 的 OctokitGitHubAdapter 作为 GitHubPort；
- *  4. 实例化 Core SearchEngine 并注册 DSH 模型可见工具（search_repos/search_issues）；
+ *  4. 实例化 Core 引擎并注册 DSH 模型可见工具：
+ *     - search_repos / search_issues（M2）
+ *     - openscout_approve / openscout_publish（M4 审批与发布）
  *  5. 在插件卸载时按可逆转顺序释放：工具 → 域。
  *
  * 核心引擎（@openscout/core）完全不感知 DSH；换宿主只改本包。
@@ -14,13 +16,18 @@
 import type { Context, Plugin } from '@deepseek-ai/cordis'
 import {
   SearchEngine,
+  ContribOrchestrator,
+  PublishEngine,
+  DedupEngine,
   systemClock,
 } from '@openscout/core'
 import { OctokitGitHubAdapter } from '@openscout/github-adapter'
 import { openscoutDomainSpec } from './spec.js'
 import { DshStorage } from './storage.js'
 import { DshCredentialPort, GITHUB_TOKEN_REF } from './credential.js'
+import { DshApprovalPort } from './approval.js'
 import { registerSearchTools } from './tools.js'
+import { registerPublishingTools } from './publishing-tools.js'
 
 /** 插件名称（挂到 cordis.yml 时引用）。 */
 export const name = 'openscout-dsh'
@@ -49,13 +56,29 @@ export function apply(ctx: Context, _config: Config): void {
     // 3. GitHub 适配器（来自 @openscout/github-adapter；逐操作通过 credentials 解析 Token）
     const github = new OctokitGitHubAdapter(credentials)
 
-    // 4. 核心引擎 + 工具
-    const search = new SearchEngine(github, systemClock)
-    const disposers = registerSearchTools(search, (def) => ctx.tools.register(def))
+    // 4. 审批适配器（可选设施；缺省 fail-closed）
+    const approval = new DshApprovalPort(() => ctx.approval as never)
 
-    // 5. 可逆转清理：先卸工具，再关域
+    // 5. 核心引擎 + 工具
+    const search = new SearchEngine(github, systemClock)
+    const dedup = new DedupEngine({ storage, clock: systemClock })
+    // ContribOrchestrator 在 M4 适配器只用于审批控制面（approve）。
+    // 其 generate 路径依赖 AgentPort（由 M4 宿主适配 adapter-agent 注入）；
+    // 此处提供一个拒绝式 Agent 占位，避免在未接入 Agent 时误触发代码生成。
+    const noopAgent = {
+      async delegateCodeWork() {
+        return { success: false, failureReason: '未接入 Agent 适配器，请经 adapter-agent 驱动生成' }
+      },
+    }
+    const orchestrator = new ContribOrchestrator({ storage, dedup, agent: noopAgent, approval })
+    const publishEngine = new PublishEngine({ storage, github, approval })
+
+    const searchDisposers = registerSearchTools(search, (def) => ctx.tools.register(def))
+    const publishDisposers = registerPublishingTools(orchestrator, publishEngine, (def) => ctx.tools.register(def))
+
+    // 6. 可逆转清理：先卸工具，再关域
     return () => {
-      for (const dispose of disposers) dispose()
+      for (const dispose of [...searchDisposers, ...publishDisposers]) dispose()
       void domain.close()
     }
   })

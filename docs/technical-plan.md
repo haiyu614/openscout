@@ -654,6 +654,7 @@ Week 19-20 │ M7: 打磨 + 演示           │ MVP 就绪
 | **M1** | ✅ 已完成并推送 | `CandidateRanker`（仓库+Issue 可解释评分，可独立单测）；`ContributionPreflight`（Issue 可行性，可注入时钟）；`DedupEngine`（§6.2 八条去重规则的 1/2/3/4/5/6/8 与墓碑）；`SearchEngine` 重构为委托 Ranker；33 个单测（Mock Port） | `tsc --build` 通过；`vitest` 33/33 通过；engines 覆盖率 94–100% |
 | **M2** | ✅ 已推送 | `packages/adapter-dsh`：OpenScout DSH 域声明（5 表）；`DshStorage implements StoragePort`（Domain→Core 五表）；`DshCredentialPort implements CredentialPort`（经 `ctx.credentials.resolve`）；复用 `OctokitGitHubAdapter`；模型可见工具 `search_repos`/`search_issues`；Cordis 插件入口（开域/构造引擎/注册工具/可逆转清理） | `tsc --build` 通过；`vitest` 46/46 通过；仓库覆盖率 97.39%；运行态动态插件验证 `storageDomain.open`/`credentials.resolve`/`harness.defineTool`+`ctx.tools.register` 真实契约（见 `docs/m2-evaluation.md`） |
 | **M3** | ✅ 已推送 | Core 纯逻辑三件套：`ReviewBundleBuilder`（diff+摘要+PR文案）、`PRWorkflowEngine`（10 状态机，fail-closed）、`ContribOrchestrator`（去重→Agent→ReviewBundle→状态流转，到 review 为止）；复用 `DedupEngine`/`StoragePort`/`AgentPort` | `tsc --build` 通过；`vitest` 78/78 通过；仓库覆盖率 97.79%；`core/src/engines/contrib` 98.82%；Core 零 DSH 依赖（见 `docs/m3-evaluation.md`） |
+| **M4** | ✅ 已推送 | Core：`ApprovalGate`（版本绑定+fail-closed）、`PublishEngine`（fork→branch→push→PR→published，失败回写 failed）、`ContribOrchestrator.approve`（review→approved 绑版本）；`PRWorkItemRecord.reviewBundle` 字段；adapter-dsh：`DshApprovalPort`、`openscout_approve`/`openscout_publish` 工具；复用 `github-adapter` 写操作（M0 实现） | `tsc --build` 通过；`vitest` 99/99 通过；仓库覆盖率 90.19%（adapter 胶水层真机态验证）；Core 零 DSH 依赖（见 `docs/m4-evaluation.md`） |
 
 **复用性验证（M1 末）**
 - [x] `packages/core` 在没有 `adapter-dsh` 的情况下独立构建和测试通过
@@ -674,5 +675,14 @@ Week 19-20 │ M7: 打磨 + 演示           │ MVP 就绪
  - [x] M3 三引擎均用 Mock Port 单测（32 个），含状态机 fail-closed 非法流转拒绝
  - [x] 全量测试 78/78 通过，仓库覆盖率 97.79%；M1/M2 单测无回归
  - [ ] 真机闭环（去重→Agent→ReviewBundle→发布）：待静态插件挂载能力 + `adapter-agent`/`adapter-fs`/`adapter-shell` 落地后真机跑通（与 M2 真机验证同源，环境令牌限制，非代码问题）
+
+ **复用性验证（M4 末）**
+ - [x] `packages/core` 零 DSH/Cordis 导入（grep 确认）；M4 Core 仅依赖 ApprovalPort/GitHubPort/StoragePort/ClockPort
+ - [x] `PublishEngine` 不读文件系统（Core 零 fs 依赖）；文件字节经 `Commit[]` 由 Adapter 注入，符合端口/适配器边界
+ - [x] `ApprovalGate` 版本绑定 + fail-closed（不可用/版本漂移/拒绝一律拦截）单测覆盖
+ - [x] `github-adapter` 写操作（fork/branch/push/PR/close/deleteBranch）保持真实 Octokit 实现、M4 仅复用未改动
+ - [x] 全量测试 99/99 通过，仓库覆盖率 90.19%；M1/M2/M3 单测无回归
+ - [ ] 真机闭环发布（fork→push→草稿 PR）待静态插件挂载能力 + 有效 token 后跑通（adapter-dsh 已注册 `openscout_publish`）
+ - [ ] 宿主审批设施 `ctx.approval` 真机实现（当前 shim 声明可选，缺省 fail-closed）
 
 > 注：M1 排期原计划 3 周，因 M0 已包含 `SearchEngine` 雏形，实际聚焦于把评分/去重抽离为可独立测试的纯逻辑 + 补齐八条去重规则 + 单测，已在一次实现内完成。M2 起进入 DSH Adapter 搜索闭环。

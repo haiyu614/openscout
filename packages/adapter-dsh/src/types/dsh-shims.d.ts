@@ -14,6 +14,8 @@ declare module '@deepseek-ai/cordis' {
     storageDomain: DomainFacility
     credentials: CredentialProvider
     tools: ToolRuntime
+    /** 可选：审批设施（缺省时 Core 走 fail-closed）。 */
+    approval?: { requestApproval(req: unknown): Promise<unknown> }
     /** Register a disposer-returning effect on the current fiber. */
     effect<T>(dispose: () => T | Promise<T> | void): void
     /** Subscribe to an event. */
