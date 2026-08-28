@@ -643,3 +643,20 @@ Week 19-20 │ M7: 打磨 + 演示           │ MVP 就绪
 | 长期维护 | 升级 DSH 影响全部代码 | 只影响 Adapter 层 |
 
 **结论：v2 方案以约 +15% 首版开发成本，换取核心代码 70% 可复用 + 适配新宿主仅需 2-4 周的战略优势。对于一个明确要跨宿主的产品，这是正确的架构投资。**
+
+---
+
+## 十三、实现进度（项目管理）
+
+| 里程碑 | 状态 | 完成内容 | 验证 |
+|--------|------|----------|------|
+| **M0** | ✅ 已完成并推送 | monorepo(pnpm)+tsconfig+vitest；9 个 Port 接口；数据模型(zod)；`InMemoryStorage`；`OctokitGitHubAdapter`；`ClockPort` | `tsc --build` 通过；`github-adapter` 类型修复 |
+| **M1** | ✅ 已完成并推送 | `CandidateRanker`（仓库+Issue 可解释评分，可独立单测）；`ContributionPreflight`（Issue 可行性，可注入时钟）；`DedupEngine`（§6.2 八条去重规则的 1/2/3/4/5/6/8 与墓碑）；`SearchEngine` 重构为委托 Ranker；33 个单测（Mock Port） | `tsc --build` 通过；`vitest` 33/33 通过；engines 覆盖率 94–100% |
+
+**复用性验证（M1 末）**
+- [x] `packages/core` 在没有 `adapter-dsh` 的情况下独立构建和测试通过
+- [x] Core 单元测试全部使用 Mock Port（`InMemoryStorage` + `makeMockGithub`）
+- [x] `package.json` 运行时依赖仅 `zod`
+- [x] 更换 `StoragePort` 实现（内存）后所有 Core 测试通过
+
+> 注：M1 排期原计划 3 周，因 M0 已包含 `SearchEngine` 雏形，实际聚焦于把评分/去重抽离为可独立测试的纯逻辑 + 补齐八条去重规则 + 单测，已在一次实现内完成。M2 起进入 DSH Adapter 搜索闭环。

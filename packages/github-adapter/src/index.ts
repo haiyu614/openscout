@@ -153,7 +153,7 @@ export class OctokitGitHubAdapter implements GitHubPort {
       githubId: data.id,
       number: data.number,
       title: data.title,
-      body: data.body,
+      body: data.body ?? null,
       state: data.state as 'open' | 'closed',
       labels: data.labels.map(l => (typeof l === 'string' ? l : l.name ?? '')),
       assignees: data.assignees?.map(a => a.login) ?? [],
@@ -177,7 +177,7 @@ export class OctokitGitHubAdapter implements GitHubPort {
       })
       return data.map(event => ({
         type: event.event ?? 'unknown',
-        createdAt: event.created_at ?? '',
+        createdAt: 'created_at' in event ? (event.created_at as string) ?? '' : '',
         actor: 'actor' in event ? (event.actor as { login?: string })?.login : undefined,
       }))
     } catch {

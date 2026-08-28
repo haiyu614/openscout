@@ -14,3 +14,12 @@ export * from './models/index.js'
 // 引擎（后续逐步添加）
 export { SearchEngine } from './engines/search.js'
 export type { SearchReposParams, SearchReposResult, SearchIssuesParams, SearchIssuesResult } from './engines/search.js'
+
+export { CandidateRanker, passesRepoHardFilters, defaultRankerConfig, feasibilityOrder } from './engines/ranker.js'
+export type { RankedRepository, RankedIssue, RankerConfig, Feasibility } from './engines/ranker.js'
+
+export { assessIssueFeasibility } from './engines/preflight.js'
+export type { FeasibilityAssessment } from './engines/preflight.js'
+
+export { DedupEngine, issueDeduplicationKey } from './engines/dedup.js'
+export type { DedupDecision, DedupEngineDeps, RegisterInput, RemoteFacts } from './engines/dedup.js'

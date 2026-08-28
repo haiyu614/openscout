@@ -9,7 +9,7 @@ export { TaskRunStatus, TaskRunRecord } from './task-run.js'
 
 export { PRWorkItemStatus, PRWorkItemRecord, RemotePR } from './pr-work-item.js'
 
-export { DedupStatus, DedupRecord, issueDeduplicationKey } from './dedup.js'
+export { DedupStatus, DedupRecord, issueDeduplicationKey, intentFingerprint } from './dedup.js'
 
 export { QuotaWindowRecord, quotaWindowKey } from './quota.js'
 
