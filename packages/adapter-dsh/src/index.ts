@@ -28,6 +28,8 @@ import { DshCredentialPort, GITHUB_TOKEN_REF } from './credential.js'
 import { DshApprovalPort } from './approval.js'
 import { registerSearchTools } from './tools.js'
 import { registerPublishingTools } from './publishing-tools.js'
+import { buildScheduler } from './plugin-scheduler.js'
+import { registerTaskTools } from './task-tools.js'
 
 /** 插件名称（挂到 cordis.yml 时引用）。 */
 export const name = 'openscout-dsh'
@@ -76,9 +78,20 @@ export function apply(ctx: Context, _config: Config): void {
     const searchDisposers = registerSearchTools(search, (def) => ctx.tools.register(def))
     const publishDisposers = registerPublishingTools(orchestrator, publishEngine, (def) => ctx.tools.register(def))
 
-    // 6. 可逆转清理：先卸工具，再关域
+    // 7. M5 定时任务子系统：TaskEngine + SchedulerEngine（Cordis timer 实现 SchedulerPort）
+    const schedulerBundle = buildScheduler({
+      ctx, storage, github, agent: noopAgent, approval,
+    })
+    const taskDisposers = registerTaskTools(
+      { taskEngine: schedulerBundle.taskEngine, schedulerEngine: schedulerBundle.schedulerEngine },
+      (def) => ctx.tools.register(def),
+    )
+    schedulerBundle.start()
+
+    // 8. 可逆转清理：先卸工具，再停调度，后关域
     return () => {
-      for (const dispose of [...searchDisposers, ...publishDisposers]) dispose()
+      for (const dispose of [...searchDisposers, ...publishDisposers, ...taskDisposers]) dispose()
+      schedulerBundle.stop()
       void domain.close()
     }
   })

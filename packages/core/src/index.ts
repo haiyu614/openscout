@@ -42,3 +42,12 @@ export { requestApproval, isApprovalValid } from './engines/contrib/approval-gat
 export type { ApprovalGateRequest, GateResult } from './engines/contrib/approval-gate.js'
 export { PublishEngine } from './engines/contrib/publish-engine.js'
 export type { PublishRequest, PublishResult, PublishEngineDeps } from './engines/contrib/publish-engine.js'
+
+// M5: 定时任务
+export { parseCron, parseEvery, nextOccurrence } from './engines/cron.js'
+export { TaskEngine } from './engines/task.js'
+export type { CreateTaskInput, QuotaCheck, TaskEngineDeps } from './engines/task.js'
+export { SchedulerEngine } from './engines/scheduler.js'
+export type { RunHandler, SchedulerEngineDeps } from './engines/scheduler.js'
+export { ScanOrchestrator } from './engines/scan.js'
+export type { ScanDeps, ScanResult } from './engines/scan.js'
