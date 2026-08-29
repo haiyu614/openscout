@@ -26,6 +26,8 @@ export const DedupRecord = z.object({
   /** 最近更新时间 */
   updatedAt: z.string(),
   createdAt: z.string(),
+  /** 已发布的远端 PR 编号（规则 4 跨轮/跨任务去重用，可空） */
+  publishedPRNumber: z.number().optional(),
 })
 export type DedupRecord = z.infer<typeof DedupRecord>
 

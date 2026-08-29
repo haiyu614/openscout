@@ -30,6 +30,7 @@ import { registerSearchTools } from './tools.js'
 import { registerPublishingTools } from './publishing-tools.js'
 import { buildScheduler } from './plugin-scheduler.js'
 import { registerTaskTools } from './task-tools.js'
+import { registerWorkItemTools } from './workitem-tools.js'
 
 /** 插件名称（挂到 cordis.yml 时引用）。 */
 export const name = 'openscout-dsh'
@@ -86,11 +87,15 @@ export function apply(ctx: Context, _config: Config): void {
       { taskEngine: schedulerBundle.taskEngine, schedulerEngine: schedulerBundle.schedulerEngine },
       (def) => ctx.tools.register(def),
     )
+    const workItemDisposers = registerWorkItemTools(
+      { orchestrator },
+      (def) => ctx.tools.register(def),
+    )
     schedulerBundle.start()
 
     // 8. 可逆转清理：先卸工具，再停调度，后关域
     return () => {
-      for (const dispose of [...searchDisposers, ...publishDisposers, ...taskDisposers]) dispose()
+      for (const dispose of [...searchDisposers, ...publishDisposers, ...taskDisposers, ...workItemDisposers]) dispose()
       schedulerBundle.stop()
       void domain.close()
     }

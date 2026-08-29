@@ -215,6 +215,39 @@ export class DedupEngine {
     return this.table.delete(key)
   }
 
+  // === M6：跨轮/跨任务已发布 PR 记录（规则 4 增强） ===
+
+  /**
+   * 记录某去重键已发布到远端 PR（发布成功后调用）。
+   * 使后续同 Issue 的扫描（含其他任务）能通过 checkRemote 的 publishedPRNumbers 识别，
+   * 避免重复发布同一个 Issue。
+   */
+  async recordPublication(key: string, prNumber: number, now: string = this.clock.now().toISOString()): Promise<void> {
+    const existing = this.table.get(key) as DedupRecord | undefined
+    const updated: DedupRecord = existing
+      ? { ...existing, publishedPRNumber: prNumber, updatedAt: now }
+      : {
+          key,
+          workItemId: `pr-${prNumber}`,
+          status: 'active',
+          taskId: 'published',
+          updatedAt: now,
+          createdAt: now,
+          publishedPRNumber: prNumber,
+        }
+    await this.table.put(key, updated as unknown as DedupRecord)
+  }
+
+  /** 返回某 Issue 主键已发布的 PR 编号列表（跨任务/跨轮可见）。 */
+  publishedPRNumbersFor(key: string): number[] {
+    const out: number[] = []
+    for (const [, v] of this.table.entries()) {
+      const r = v as DedupRecord
+      if (r.key === key && r.publishedPRNumber !== undefined) out.push(r.publishedPRNumber)
+    }
+    return out
+  }
+
   /** 查询某 Issue 主键是否已存在活跃工作项（供 PRWorkflowEngine 版本去重使用） */
   findActiveByIssueKey(key: string): DedupRecord | undefined {
     return this.findRecord(r => r.status === 'active' && r.key === key)

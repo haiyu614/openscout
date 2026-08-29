@@ -27,7 +27,7 @@ export type { DedupDecision, DedupEngineDeps, RegisterInput, RemoteFacts } from 
 // M3: 贡献包生成
 export { buildReviewBundle } from './engines/contrib/review-bundle-builder.js'
 export type { BuildContext } from './engines/contrib/review-bundle-builder.js'
-export { transition, isTerminal, canReset } from './engines/contrib/pr-workflow-engine.js'
+export { transition, isTerminal, canReset, canRevise, nextVersion } from './engines/contrib/pr-workflow-engine.js'
 export type { TransitionRequest, TransitionResult } from './engines/contrib/pr-workflow-engine.js'
 export { ContribOrchestrator } from './engines/contrib/orchestrator.js'
 export type {

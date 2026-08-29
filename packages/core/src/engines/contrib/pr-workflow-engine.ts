@@ -43,6 +43,11 @@ const TRANSITIONS: ReadonlyMap<string, PRWorkItemStatus> = new Map<string, PRWor
   ['review:approve', 'approved'],
   ['review:discard', 'discarded'],
   ['review:reject', 'discarded'],
+  // M6 多轮协作：审阅前/批准后重新打开进行新一轮修改
+  ['review:revise', 'revising'],
+  ['approved:revise', 'revising'],
+  ['approved:discard', 'discarded'],
+  ['approved:reject', 'discarded'],
   ['approved:publish', 'publishing'],
   ['publishing:publish-succeeded', 'published'],
   ['publishing:publish-failed', 'failed'],
@@ -50,6 +55,9 @@ const TRANSITIONS: ReadonlyMap<string, PRWorkItemStatus> = new Map<string, PRWor
   ['published:revise', 'revising'],
   ['revising:publish', 'publishing'],
   ['revising:revise', 'revising'],
+  // M6 多轮：本轮修改完成，重新提交审阅（版本已递增）
+  ['revising:submit-for-review', 'review'],
+  ['revising:fail', 'failed'],
   ['revising:close', 'closed'],
   ['published:close', 'closed'],
   ['failed:reset', 'candidate'],
@@ -97,4 +105,17 @@ export function isTerminal(status: PRWorkItemStatus): boolean {
  */
 export function canReset(status: PRWorkItemStatus): boolean {
   return status === 'failed' || status === 'discarded' || status === 'closed'
+}
+
+/**
+ * 判定某状态能否进入「多轮修改」（revise）。
+ * review / approved / published / revising 均可重新打开，持续迭代。
+ */
+export function canRevise(status: PRWorkItemStatus): boolean {
+  return status === 'review' || status === 'approved' || status === 'published' || status === 'revising'
+}
+
+/** 下一版本号：每轮修改递增（初版为 1）。 */
+export function nextVersion(currentVersion: number): number {
+  return currentVersion + 1
 }

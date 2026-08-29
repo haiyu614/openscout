@@ -26,7 +26,7 @@ import type { ClockPort } from '../../ports/clock.js'
 import { systemClock } from '../../ports/clock.js'
 import { issueDeduplicationKey } from '../../models/dedup.js'
 import { buildReviewBundle, type BuildContext } from './review-bundle-builder.js'
-import { transition, canReset, type TransitionResult } from './pr-workflow-engine.js'
+import { transition, canReset, canRevise, nextVersion, type TransitionResult } from './pr-workflow-engine.js'
 import type { ReviewBundle } from '../../models/review-bundle.js'
 import type { ApprovalPort } from '../../ports/approval.js'
 import { requestApproval } from './approval-gate.js'
@@ -282,5 +282,84 @@ export class ContribOrchestrator {
       return { ok: false, reason: `状态 ${rec.status} 不可 reset` }
     }
     return this.applyTransition(id, rec.status, 'reset')
+  }
+
+  /**
+   * 多轮修改（M6）：将工作项重新打开为 revising，委托 Agent 完成新一轮代码改动，
+   * 构建新版本审阅包（版本号递增），并提交回 review 状态。
+   *
+   * 允许起点：review / approved / published / revising（fail-closed 其余状态）。
+   * 每次 revise 将 currentVersion +1，ReviewBundle.version 同步递增，便于版本去重与审计。
+   */
+  async revise(id: string, instruction?: string): Promise<ContribResult> {
+    const cur = this.table.get(id) as PRWorkItemRecord | undefined
+    if (!cur) return { kind: 'agent-failed', workItem: cur as never, reason: '工作项不存在' }
+    if (!canRevise(cur.status)) {
+      return { kind: 'agent-failed', workItem: cur, reason: `状态 ${cur.status} 不可 revise（需 review/approved/published/revising）` }
+    }
+    if (cur.status === 'revising') {
+      // 已在修改中：直接复用现有 revising 状态继续（不重复转换）
+    } else {
+      const toRev = this.applyTransition(id, cur.status, 'revise')
+      if (!toRev.ok) return { kind: 'agent-failed', workItem: cur, reason: toRev.reason }
+    }
+
+    const now = this.clock.now().toISOString()
+    const newVersion = nextVersion(cur.currentVersion)
+
+    // 委托 Agent 完成本轮代码改动
+    const agentReq: CodeWorkRequest = {
+      instruction: instruction ?? buildInstruction({
+        intent: cur.contributionIntent,
+        repository: cur.repository,
+        issue: cur.issue,
+        workingDirectory: cur.workspacePath ?? '',
+      }),
+      workingDirectory: cur.workspacePath ?? '',
+    }
+    const agentResult = await this.deps.agent.delegateCodeWork(agentReq)
+
+    if (!agentResult.success) {
+      const toFail = this.applyTransition(id, 'revising', 'fail')
+      const failed = this.table.get(id) as PRWorkItemRecord
+      return { kind: 'agent-failed', workItem: toFail.ok ? failed : cur, reason: agentResult.failureReason ?? 'Agent 未完成本轮代码工作' }
+    }
+
+    // 提交回 review（本轮修改完成）
+    const toReview = this.applyTransition(id, 'revising', 'submit-for-review')
+    if (!toReview.ok) return { kind: 'agent-failed', workItem: cur, reason: toReview.reason }
+
+    const updated = this.table.get(id) as PRWorkItemRecord
+    const ctx: BuildContext = {
+      repository: cur.repository,
+      issue: cur.issue,
+      branchName: updated.branchName ?? 'openscout/contrib',
+      intent: cur.contributionIntent,
+      diff: agentResult.diff ?? '',
+      changedFiles: agentResult.changedFiles ?? [],
+      validations: agentResult.validationResults ?? [],
+      summary: agentResult.summary ?? '',
+      generatedAt: now,
+      version: newVersion,
+    }
+    const bundle = buildReviewBundle(ctx, agentResult)
+
+    // 持久化新版本（currentVersion 递增 + 新审阅包）
+    const saved = PRWorkItemRecord.parse({
+      ...updated,
+      currentVersion: newVersion,
+      reviewBundle: bundle,
+      updatedAt: now,
+    })
+    this.table.put(id, saved as unknown)
+
+    return { kind: 'generated', workItem: saved, bundle, version: newVersion }
+  }
+
+  /** 列出全部工作项（按更新时间倒序）。 */
+  listWorkItems(): PRWorkItemRecord[] {
+    const items: PRWorkItemRecord[] = []
+    for (const [, v] of this.table.entries()) items.push(v as PRWorkItemRecord)
+    return items.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
   }
 }

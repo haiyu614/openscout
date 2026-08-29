@@ -24,6 +24,7 @@ import { systemClock } from '../../ports/clock.js'
 import { transition } from './pr-workflow-engine.js'
 import { isApprovalValid } from './approval-gate.js'
 import type { ReviewBundle } from '../../models/review-bundle.js'
+import type { DedupEngine } from '../dedup.js'
 
 /** 发布入参。 */
 export interface PublishRequest {
@@ -46,6 +47,10 @@ export interface PublishEngineDeps {
   github: GitHubPort
   approval: ApprovalPort
   clock?: ClockPort
+  /** 去重引擎（可选）：发布成功后将远端 PR 写入去重注册表，供跨轮/跨任务规则 4 去重 */
+  dedup?: DedupEngine
+  /** 发布成功时回写去重所用的 Issue 主键（issueDeduplicationKey 形式） */
+  issueKey?: (workItem: PRWorkItemRecord) => string
 }
 
 export class PublishEngine {
@@ -138,6 +143,11 @@ export class PublishEngine {
         updatedAt: this.clock.now().toISOString(),
       })
       this.table.put(req.workItemId, done as unknown)
+      // 发布成功：写回去重注册表（规则 4 跨轮/跨任务防重发）
+      if (this.deps.dedup && this.deps.issueKey) {
+        const key = this.deps.issueKey(done)
+        if (key) await this.deps.dedup.recordPublication(key, pr.number)
+      }
       return { ok: true, workItem: done, remotePR: { number: pr.number, url: pr.htmlUrl }, draft: req.asDraft ?? true }
     } catch (err) {
       // 失败：publishing -> failed（fail-closed：半发布也要留痕）
