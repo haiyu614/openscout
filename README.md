@@ -51,7 +51,7 @@ packages/
 └── adapter-dsh/       # DSH 宿主适配（未来）
 ```
 
-## 开发
+## Quick Start
 
 ```bash
 # 安装依赖
